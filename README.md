@@ -1,4 +1,4 @@
-# Esp8266BasedCoronaVirusTracking
+# ESP8266 Corona Tracking with a I2C OLED
 <p>
 
 Modified to accomidate proper GET URL's and the 0.9" 128x32 I2C OLED
