@@ -1,25 +1,30 @@
 # Esp8266BasedCoronaVirusTracking
+<p>
+
+Modified to accomidate proper GET URL's and the 0.9" 128x32 I2C OLED
 
 
-# Please pay attention to the warnings about corona virus. Let's Stay at home!
+ 1. Change your wifi information from **WifiConnect.h** file
 
+   * char ssid[32] = "yourssid";
+   * char password[64] = "yourpass";
 
- 1- Change your wifi information from **WifiConnect.h** file
-
-  `char ssid[32] = "yourssid";`
-  `char password[64] = "yourpass";`
-
- 2- Define your country code from **corona.ino** file
+ 2. Modify the HTTP (NOT HTTPS) GET URL
  
-   `#define country_code "yourcountrycode"`
-   
-   GET (https://coronavirus-19-api.herokuapp.com/countries) -> all countries info
-   
+    Examples:
+    * http.begin("http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
+    * http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
+    
+ 3. Modify the JSON Values to match
  
- ![alt text][logo]
-
-[logo]: https://github.com/volkanunal/Esp8266BasedCoronaVirusTracking/blob/master/image.jpeg "Logo Title Text 2"
+    Examples:
+    * int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
+    * int deaths = (int)get_json_value(JsonArray, "deaths", INT);
+    * int recovered = (int)get_json_value(JsonArray, "recovered", INT);
    
+
+
+![GitHub Logo](https://i.imgur.com/uCq3Y1m.jpg)  
    
   
   
