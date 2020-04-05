@@ -1,14 +1,16 @@
 #include <ESP8266HTTPClient.h> 
-#include <LiquidCrystal_I2C.h>
+#include <Wire.h>
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
 #include "json_parser.h"
 #include "WifiConnect.h"
 
 #define s2ms(second) (second*1000)
 unsigned long long prev_millis(0);
 
-#define country_code "Turkey"
-
-LiquidCrystal_I2C lcd(0x3f, 16, 2);
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 int interval = s2ms(60);
 unsigned long long PreviousMillis = 0;
@@ -17,23 +19,26 @@ bool bFirstKickMillis = false;
 
 extern bool bGotIpFlag;
 
-static String build_url_from_country(String country)
-{
-  String url = "http://coronavirus-19-api.herokuapp.com/countries/";
-  url = url + country;
-  return url;
-}
-
 void setup(void)
 { 
-  lcd.begin();
-  lcd.backlight();
-  lcd.setCursor(0, 0);
-  lcd.print("Covid-19 Watch");
+  Serial.begin(115200);
 
-  #if defined JSON_DEBUG
-    Serial.begin(9600);
-  #endif
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { // Address 0x3D for 128x64
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+  delay(2000);
+  display.clearDisplay();
+
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.println("Covids Tracker by BwE");
+  display.setCursor(0, 10);
+  display.println("Not Connected");
+  display.setCursor(0, 20);
+  display.println("Wait or Reset");
+  display.display(); 
   
   JSON_LOG("Connecting...");
   
@@ -55,7 +60,10 @@ void loop()
     PreviousMillis = CurrentMillis;
     
     HTTPClient http; 
-    http.begin(build_url_from_country(country_code));
+    
+    //GET directly from the URL (Dont use HTTPS) Modify the JSON Value as required!
+    http.begin("http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
+    //http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
     
     int httpCode = http.GET(); 
   
@@ -64,7 +72,7 @@ void loop()
       String payload = http.getString();
        
       char* JsonArray = (char *)malloc(payload.length() + 1);
-      if (!JsonArray) JSON_LOG("upssss fuck");
+      if (!JsonArray) JSON_LOG("Uh Oh!");
       
       payload.toCharArray(JsonArray, payload.length() + 1);
       
@@ -72,7 +80,7 @@ void loop()
       
       if (json_validate(JsonArray))
       {
-        int confirmed = (int)get_json_value(JsonArray, "cases", INT);
+        int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
         int deaths = (int)get_json_value(JsonArray, "deaths", INT);
         int recovered = (int)get_json_value(JsonArray, "recovered", INT);
       
@@ -80,19 +88,20 @@ void loop()
         JSON_LOG(deaths);
         JSON_LOG(recovered);
         
-        lcd.clear();
-        lcd.print("Cnfrmd");
-        lcd.setCursor(7,0);
-        lcd.print("dths");
-        lcd.setCursor(12,0);
-        lcd.print("rcvd");
-        lcd.setCursor(2, 1);
-        lcd.print(confirmed);
-        lcd.setCursor(8, 1);
-        lcd.print(deaths);
-        lcd.setCursor(14, 1);
-        lcd.print(recovered);
-        
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(WHITE);
+        display.setCursor(0, 0);
+        display.println("Covids Tracker by BwE");
+        display.setCursor(0, 10);
+        display.println("Confirmed: ");
+        display.setCursor(60, 10);
+        display.println(confirmed);
+        display.setCursor(0, 20);
+        display.println("Deaths: ");
+        display.setCursor(42, 20);
+        display.println(deaths);
+        display.display(); 
       }
       
       free(JsonArray);
