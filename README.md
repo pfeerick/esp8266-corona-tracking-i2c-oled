@@ -15,7 +15,7 @@ Modified to accomidate proper GET URL's and the 0.9" 128x32 I2C OLED
     * http.begin("http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
     * http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
     
- 3. Modify the JSON Values to match
+ 3. Modify the JSON Values to match the output (Browse directly or look at serial monitor)
  
     Examples:
     * int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
