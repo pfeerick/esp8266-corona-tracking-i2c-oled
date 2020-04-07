@@ -2,6 +2,7 @@
 <p>
 
 Modified to accomidate proper GET URL's and the 0.9" 128x32 I2C OLED
+Though I have also added my own take on a 16x2 I2C LCD version!
 
 
  1. Change your wifi information from **WifiConnect.h** file
