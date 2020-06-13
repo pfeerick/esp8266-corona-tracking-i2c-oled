@@ -3,8 +3,8 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include "json_parser.h"
-#include "WifiConnect.h"
+#include <json_parser.h>
+#include <WifiConnect.h>
 
 #define s2ms(second) (second * 1000)
 unsigned long long prev_millis(0);
