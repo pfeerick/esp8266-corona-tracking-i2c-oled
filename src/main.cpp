@@ -90,11 +90,11 @@ void loop()
       {
         int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
         int deaths = (int)get_json_value(JsonArray, "deaths", INT);
-        int recovered = (int)get_json_value(JsonArray, "recovered", INT);
+        // int recovered = (int)get_json_value(JsonArray, "recovered", INT);
 
         JSON_LOG(confirmed);
         JSON_LOG(deaths);
-        JSON_LOG(recovered);
+        // JSON_LOG(recovered);
 
         display.clearDisplay();
         display.setTextSize(1);
