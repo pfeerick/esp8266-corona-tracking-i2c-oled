@@ -1,3 +1,4 @@
+#include <Arduino.h>
 #include <ESP8266HTTPClient.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
@@ -9,7 +10,7 @@
 unsigned long long prev_millis(0);
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 32 // OLED display height, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 int interval = s2ms(60);
