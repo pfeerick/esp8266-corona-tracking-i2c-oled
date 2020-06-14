@@ -47,7 +47,7 @@ void setup(void)
   display.println("Wait or Reset");
   display.display();
 
-  Serial.printf("Connecting to %s ",ssid);
+  Serial.printf("Connecting to %s ", ssid);
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
@@ -75,50 +75,60 @@ void loop()
     HTTPClient http;
 
     //GET directly from the URL (Dont use HTTPS) Modify the JSON Value as required!
-    http.begin(client, "http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
-    //http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
-
-    int httpCode = http.GET();
-
-    if (httpCode > 0)
+    if (http.begin(client, "http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland"))
     {
-      String payload = http.getString();
+      //http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
 
-      char *JsonArray = (char *)malloc(payload.length() + 1);
-      if (!JsonArray)
-        JSON_LOG("Uh Oh!");
+      int httpCode = http.GET();
 
-      payload.toCharArray(JsonArray, payload.length() + 1);
-
-      JSON_LOG(JsonArray);
-
-      if (json_validate(JsonArray))
+      if (httpCode > 0)
       {
-        int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
-        int deaths = (int)get_json_value(JsonArray, "deaths", INT);
-        // int recovered = (int)get_json_value(JsonArray, "recovered", INT);
+        String payload = http.getString();
 
-        JSON_LOG(confirmed);
-        JSON_LOG(deaths);
-        // JSON_LOG(recovered);
+        char *JsonArray = (char *)malloc(payload.length() + 1);
+        if (!JsonArray)
+          JSON_LOG("Uh Oh!");
 
-        display.clearDisplay();
-        display.setTextSize(1);
-        display.setTextColor(WHITE);
-        display.setCursor(0, 0);
-        display.println("Covids Tracker by BwE");
-        display.setCursor(0, 10);
-        display.println("Confirmed: ");
-        display.setCursor(60, 10);
-        display.println(confirmed);
-        display.setCursor(0, 20);
-        display.println("Deaths: ");
-        display.setCursor(42, 20);
-        display.println(deaths);
-        display.display();
+        payload.toCharArray(JsonArray, payload.length() + 1);
+
+        JSON_LOG(JsonArray);
+
+        if (json_validate(JsonArray))
+        {
+          int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
+          int deaths = (int)get_json_value(JsonArray, "deaths", INT);
+          // int recovered = (int)get_json_value(JsonArray, "recovered", INT);
+
+          JSON_LOG(confirmed);
+          JSON_LOG(deaths);
+          // JSON_LOG(recovered);
+
+          display.clearDisplay();
+          display.setTextSize(1);
+          display.setTextColor(WHITE);
+          display.setCursor(0, 0);
+          display.println("Covids Tracker by BwE");
+          display.setCursor(0, 10);
+          display.println("Confirmed: ");
+          display.setCursor(60, 10);
+          display.println(confirmed);
+          display.setCursor(0, 20);
+          display.println("Deaths: ");
+          display.setCursor(42, 20);
+          display.println(deaths);
+          display.display();
+        }
+        free(JsonArray);
       }
-      free(JsonArray);
+      else
+      {
+        Serial.printf("[HTTP] GET... failed, error: %s\n", http.errorToString(httpCode).c_str());
+      }
+      http.end();
     }
-    http.end();
+    else
+    {
+      Serial.println(F("[HTTP} Unable to connect"));
+    }
   }
 }
