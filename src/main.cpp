@@ -1,10 +1,14 @@
 #include <Arduino.h>
+#include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <json_parser.h>
-#include <WifiConnect.h>
+#include <WifiCredentials.h>
+
+extern const char ssid[32];
+extern const char password[64];
 
 #define s2ms(second) (second * 1000)
 unsigned long long prev_millis(0);
@@ -16,9 +20,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 unsigned long long interval = s2ms(60);
 unsigned long long PreviousMillis = 0;
 unsigned long long CurrentMillis = interval;
-bool bFirstKickMillis = false;
-
-extern bool bGotIpFlag;
+boolean firstUpdate = true;
 
 void setup(void)
 {
@@ -39,31 +41,34 @@ void setup(void)
   display.setCursor(0, 0);
   display.println("Covids Tracker by BwE");
   display.setCursor(0, 10);
-  display.println("Not Connected");
+  display.print("WiFi: ");
+  display.print(ssid);
   display.setCursor(0, 20);
   display.println("Wait or Reset");
   display.display();
 
-  JSON_LOG("Connecting...");
+  Serial.printf("Connecting to %s ",ssid);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, password);
 
-  vConnWifiNetworkViaSdk();
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+
+  Serial.println(F(" CONNECTED!"));
+  Serial.print(F("IP address: "));
+  Serial.println(WiFi.localIP());
 }
 
 void loop()
 {
-  if (bGotIpFlag)
-    bGotIp();
+  CurrentMillis = millis();
 
-  if (bFirstKickMillis)
-    CurrentMillis = millis();
-
-  if (!bGotIpFlag && CurrentMillis - PreviousMillis >= interval)
+  if (firstUpdate || CurrentMillis - PreviousMillis >= interval)
   {
-    if (!bFirstKickMillis)
-      CurrentMillis = 0;
-
-    bFirstKickMillis = true;
-
+    firstUpdate = false;
     PreviousMillis = CurrentMillis;
 
     HTTPClient http;
