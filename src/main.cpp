@@ -71,10 +71,11 @@ void loop()
     firstUpdate = false;
     PreviousMillis = CurrentMillis;
 
+    WiFiClient client;
     HTTPClient http;
 
     //GET directly from the URL (Dont use HTTPS) Modify the JSON Value as required!
-    http.begin("http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
+    http.begin(client, "http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland");
     //http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
 
     int httpCode = http.GET();
