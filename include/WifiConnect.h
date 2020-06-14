@@ -24,8 +24,7 @@ do {\
 #define PROTOCOL_PRINT(...) do{ }while(0);
 #endif 
 
-char* 
-ConnectStatus2String(uint8_t ConnectStatusRet)
+const char* ConnectStatus2String(uint8_t ConnectStatusRet)
 {
   switch (ConnectStatusRet)
   {
@@ -39,16 +38,15 @@ ConnectStatus2String(uint8_t ConnectStatusRet)
   }
 }
 
-void ICACHE_FLASH_ATTR 
-vConnWifiNetworkViaSdk(void)
+void ICACHE_FLASH_ATTR vConnWifiNetworkViaSdk(void)
 {
   ulStart = millis();
-  
+
   wifi_set_opmode(STATION_MODE);
-  
+
   char ssid[32] = "yourssid";
   char password[64] = "yourpass";
-  
+
   struct station_config stationConf;
   stationConf.bssid_set = 0;
   os_memcpy(&stationConf.ssid, ssid, 32);
@@ -57,37 +55,39 @@ vConnWifiNetworkViaSdk(void)
   wifi_station_set_config(&stationConf);
 }
 
-bool 
-bGotIp(void)
+bool bGotIp(void)
 {
   uint32_t ulElapsedTime = 0;
-  
+
   struct ip_info ipconfig;
   char ipBuf[40];
   int ipAddres[4];
-  
+
   const char *ipstr = "%s%d.%d.%d.%d";
-  
+
   wifi_get_ip_info(STATION_IF, &ipconfig);
   PROTOCOL_PRINT(ConnectStatus2String(wifi_station_get_connect_status()));
 
-  
   if (wifi_station_get_connect_status() == STATION_GOT_IP)
   {
-    bGotIpFlag = false;
-    
+    bGotIpFlag = true;
+
     ipAddres[0] = (ipconfig.ip.addr >> 0) & 0xFF;
-    ipAddres[1] = (ipconfig.ip.addr >> 8 ) & 0xFF;
-    ipAddres[2] = (ipconfig.ip.addr >> 16 ) & 0xFF;
-    ipAddres[3] = (ipconfig.ip.addr >> 24 ) & 0xFF;
-    
+    ipAddres[1] = (ipconfig.ip.addr >> 8) & 0xFF;
+    ipAddres[2] = (ipconfig.ip.addr >> 16) & 0xFF;
+    ipAddres[3] = (ipconfig.ip.addr >> 24) & 0xFF;
+
     sprintf(ipBuf, ipstr, "IP: ", ipAddres[0], ipAddres[1], ipAddres[2], ipAddres[3]);
     PROTOCOL_PRINT(ipBuf);
-    
+
     ulElapsedTime = millis() - ulStart;
 
     PROTOCOL_PRINT("Elapsed Time : ");
     PROTOCOL_PRINT(ulElapsedTime);
-    
   }
+  else
+  {
+    bGotIpFlag = false;
+  }
+  return bGotIpFlag;
 }

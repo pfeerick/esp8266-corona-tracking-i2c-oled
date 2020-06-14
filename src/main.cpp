@@ -13,7 +13,7 @@ unsigned long long prev_millis(0);
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-int interval = s2ms(60);
+unsigned long long interval = s2ms(60);
 unsigned long long PreviousMillis = 0;
 unsigned long long CurrentMillis = interval;
 bool bFirstKickMillis = false;
