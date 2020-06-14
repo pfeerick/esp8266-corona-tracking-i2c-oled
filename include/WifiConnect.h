@@ -9,6 +9,9 @@ extern "C" {
 #include "espconn.h"
 }
 #include <ESP8266WiFi.h>
+#include "WifiCredentials.h"
+extern char ssid[32];
+extern char password[64];
 
 bool bGotIpFlag = true;
 static uint32_t ulStart = 0;
@@ -43,9 +46,6 @@ void ICACHE_FLASH_ATTR vConnWifiNetworkViaSdk(void)
   ulStart = millis();
 
   wifi_set_opmode(STATION_MODE);
-
-  char ssid[32] = "yourssid";
-  char password[64] = "yourpass";
 
   struct station_config stationConf;
   stationConf.bssid_set = 0;
