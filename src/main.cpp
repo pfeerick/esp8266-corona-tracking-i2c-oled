@@ -34,16 +34,14 @@ void setup(void)
   }
 
   delay(2000);
-  display.clearDisplay();
 
+  display.clearDisplay();
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
   display.println("Covids Tracker by BwE");
-  display.setCursor(0, 10);
   display.print("WiFi: ");
-  display.print(ssid);
-  display.setCursor(0, 20);
+  display.println(ssid);
   display.println("Wait or Reset");
   display.display();
 
@@ -108,13 +106,9 @@ void loop()
           display.setTextColor(WHITE);
           display.setCursor(0, 0);
           display.println("Covids Tracker by BwE");
-          display.setCursor(0, 10);
-          display.println("Confirmed: ");
-          display.setCursor(60, 10);
+          display.print("Confirmed: ");
           display.println(confirmed);
-          display.setCursor(0, 20);
-          display.println("Deaths: ");
-          display.setCursor(42, 20);
+          display.print("Deaths: ");
           display.println(deaths);
           display.display();
         }
