@@ -4,7 +4,7 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <json_parser.h>
+#include <ArduinoJson.h>
 #include <WifiCredentials.h>
 
 extern const char ssid[32];
@@ -83,34 +83,26 @@ void loop()
       {
         String payload = http.getString();
 
-        char *JsonArray = (char *)malloc(payload.length() + 1);
-        if (!JsonArray)
-          JSON_LOG("Uh Oh!");
+        const size_t capacity = JSON_ARRAY_SIZE(1) + 2 * JSON_OBJECT_SIZE(2) + 2 * JSON_OBJECT_SIZE(3) + JSON_OBJECT_SIZE(8) + 270;
+        DynamicJsonDocument doc(capacity);
 
-        payload.toCharArray(JsonArray, payload.length() + 1);
+        deserializeJson(doc, payload);
 
-        JSON_LOG(JsonArray);
+        JsonObject latest = doc["latest"];
+        int latest_confirmed = latest["confirmed"];
+        int latest_deaths = latest["deaths"];
+        // int latest_recovered = latest["recovered"];
 
-        if (json_validate(JsonArray))
-        {
-          int confirmed = (int)get_json_value(JsonArray, "confirmed", INT);
-          int deaths = (int)get_json_value(JsonArray, "deaths", INT);
-
-          JSON_LOG(confirmed);
-          JSON_LOG(deaths);
-
-          display.clearDisplay();
-          display.setTextSize(1);
-          display.setTextColor(WHITE);
-          display.setCursor(0, 0);
-          display.println("Covids Tracker by BwE");
-          display.print("Confirmed: ");
-          display.println(confirmed);
-          display.print("Deaths: ");
-          display.println(deaths);
-          display.display();
-        }
-        free(JsonArray);
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(WHITE);
+        display.setCursor(0, 0);
+        display.println("Covids Tracker by BwE");
+        display.print("Confirmed: ");
+        display.println(latest_confirmed);
+        display.print("Deaths: ");
+        display.println(latest_deaths);
+        display.display();
       }
       else
       {
