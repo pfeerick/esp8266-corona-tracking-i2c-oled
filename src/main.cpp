@@ -94,6 +94,9 @@ void loop()
         // int deaths = doc["deaths"];
         // int recovered = doc["recovered"];
 
+        Serial.printf("Confirmed cases: %i, Deaths: %i\n", cases, deaths);
+        // Serial.printf("Confirmed cases: %i, Deaths: %i, Recovered: %i\n", cases, deaths, recovered);
+
         display.clearDisplay();
         display.setTextSize(1);
         display.setTextColor(WHITE);
