@@ -5,21 +5,19 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include <ArduinoJson.h>
+#include <elapsedMillis.h>
 #include <WifiCredentials.h>
 
 extern const char ssid[32];
 extern const char password[64];
 
-#define s2ms(second) (second * 1000)
-unsigned long long prev_millis(0);
-
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
-unsigned long long interval = s2ms(60);
-unsigned long long PreviousMillis = 0;
-unsigned long long CurrentMillis = interval;
+unsigned int interval = 60;
+elapsedSeconds jsonRefresh;
+
 boolean firstUpdate = true;
 
 void setup(void)
@@ -62,12 +60,9 @@ void setup(void)
 
 void loop()
 {
-  CurrentMillis = millis();
-
-  if (firstUpdate || CurrentMillis - PreviousMillis >= interval)
+  if (firstUpdate || jsonRefresh >= interval)
   {
     firstUpdate = false;
-    PreviousMillis = CurrentMillis;
 
     WiFiClient client;
     HTTPClient http;
@@ -122,5 +117,7 @@ void loop()
     {
       Serial.println(F("[HTTP} Unable to connect"));
     }
+
+    jsonRefresh = 0;
   }
 }
