@@ -37,7 +37,7 @@ void setup(void)
   display.setTextSize(1);
   display.setTextColor(WHITE);
   display.setCursor(0, 0);
-  display.println("Covids Tracker by BwE");
+  display.println("Covid19 Stats Tracker");
   display.print("WiFi: ");
   display.println(ssid);
   display.println("Wait or Reset");
@@ -101,7 +101,7 @@ void loop()
         display.setTextSize(1);
         display.setTextColor(WHITE);
         display.setCursor(0, 0);
-        display.println("Covids Tracker by BwE");
+        display.println("Covid19 Stats Tracker");
         display.print("Confirmed: ");
         display.println(cases);
         display.print("Deaths: ");
