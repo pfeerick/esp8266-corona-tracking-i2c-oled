@@ -73,10 +73,9 @@ void loop()
     HTTPClient http;
 
     //GET directly from the URL (Dont use HTTPS) Modify the JSON Value as required!
-    if (http.begin(client, "http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland"))
+    if (http.begin(client, "http://coronavirus-tracker-api.herokuapp.com/v2/locations?country_code=AU&province=Queensland")) //QLD
+    // if(http.begin(client,"http://coronavirus-19-api.herokuapp.com/countries/Australia")) // Australia
     {
-      //http.begin("http://coronavirus-19-api.herokuapp.com/countries/Australia");
-
       int httpCode = http.GET();
 
       if (httpCode > 0)
@@ -88,10 +87,17 @@ void loop()
 
         deserializeJson(doc, payload);
 
+        // Province (API v2)
         JsonObject latest = doc["latest"];
-        int latest_confirmed = latest["confirmed"];
-        int latest_deaths = latest["deaths"];
-        // int latest_recovered = latest["recovered"];
+        int cases = latest["confirmed"];
+        int deaths = latest["deaths"];
+        // int recovered = latest["recovered"];
+
+        // Country (API v1)
+        // const char* country = doc["country"];
+        // int cases = doc["cases"];
+        // int deaths = doc["deaths"];
+        // int recovered = doc["recovered"];
 
         display.clearDisplay();
         display.setTextSize(1);
@@ -99,9 +105,11 @@ void loop()
         display.setCursor(0, 0);
         display.println("Covids Tracker by BwE");
         display.print("Confirmed: ");
-        display.println(latest_confirmed);
+        display.println(cases);
         display.print("Deaths: ");
-        display.println(latest_deaths);
+        display.println(deaths);
+        // display.print("Recovered: ");
+        // display.println(recovered);
         display.display();
       }
       else
